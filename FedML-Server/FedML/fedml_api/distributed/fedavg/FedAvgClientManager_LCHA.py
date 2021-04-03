@@ -16,7 +16,7 @@ from .message_define import MyMessage
 from FedML.fedml_api.distributed.fedavg.utils_LCHA import to_list_arrays, to_nested_list
 
 
-class FedAVGClientManager2(ClientManager):
+class FedAVGClientManager(ClientManager):
     def __init__(self, args, trainer, comm=None, rank=0, size=0, backend="MPI"):
         super().__init__(args, comm, rank, size, backend)
         self.trainer = trainer

@@ -7,7 +7,7 @@ import wandb
 
 from FedML.fedml_api.distributed.fedavg.utils_LCHA import to_list_arrays, to_array_arrays, aa_to_list_arrays
 
-class FedAVGAggregator2(object):
+class FedAVGAggregator(object):
 
     def __init__(self, train_pca, train_label, test_pca, test_label, worker_num, args, model_trainer):
         self.trainer = model_trainer

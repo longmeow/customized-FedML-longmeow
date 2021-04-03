@@ -107,9 +107,6 @@ class FedAVGAggregator(object):
     def aggregate_vae(self): # aggregate, set and save global VAE model
         start_time = time.time()
         global_train_var = list()
-        # 2 parameters transmitted
-        # [[self.global_vae_trainer.model.train_vars_VAE[i].eval(self.global_vae_trainer.sess) for i in range(len(vae_trainer.model.train_vars_VAE))] for _ in range(len(num_clients))]
-        # [ vae_trainer.model.train_vars_VAE for _ in range(num_clients)] # maybe no need
         for i in range(len(self.train_vars_VAE_of_clients[0])):
             global_train_var_eval = np.zeros_like(train_vars_VAE_of_clients[0][i], dtype=np.float16)
             for client in range(len(self.train_vars_VAE_of_clients)):
