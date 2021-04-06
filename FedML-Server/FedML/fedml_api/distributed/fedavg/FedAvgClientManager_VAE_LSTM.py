@@ -49,7 +49,7 @@ class FedAVGClientManager(ClientManager):
 
     def start_training(self):
         self.round_idx = 0
-        self.__vae_train()
+        self.__lstm_train()
 
     def handle_message_receive_vae_model_from_server(self, msg_params):
         logging.info("handle_message_receive_vae_model_from_server.")
@@ -59,8 +59,9 @@ class FedAVGClientManager(ClientManager):
         global_model_params = to_list_arrays(global_model_params)
         self.vae_trainer.set_vae_model_params(global_model_params)
         self.round_idx += 1
-        self.__vae_train()
-        if self.round_idx == self.num_rounds:
+        if self.round_idx < self.num_rounds:
+            self.__vae_train()
+        elif self.round_idx == self.num_rounds:
             send_phase_confirmation_to_server(0)
 
     def send_vae_model_to_server(self, receive_id, vae_model_params):
@@ -98,10 +99,11 @@ class FedAVGClientManager(ClientManager):
         client_index = msg_params.get(MyMessage.MSG_ARG_KEY_CLIENT_INDEX)
 
         global_model_params = to_list_arrays(global_model_params)
-        self.vae_trainer.set_lstm_model_params(global_model_params)
+        self.lstm_model.set_lstm_model_params(global_model_params)
         self.round_idx += 1
-        self.__lstm_train(global_model_params)
-        if self.round_idx == self.num_rounds - 1:
+        if self.round_idx < self.num_rounds:
+            self.__lstm_train()
+        elif self.round_idx == self.num_rounds:
             self.finish()
 
     def send_lstm_model_to_server(self, receive_id, lstm_model_params):
@@ -111,10 +113,9 @@ class FedAVGClientManager(ClientManager):
         self.send_message(message)
         logging.info('sent lstm model')
 
-    def __lstm_train(self, global_model_params):
+    def __lstm_train(self):
         logging.info("#######LSTM training########### round_id = %d" % self.round_idx)
         self.lstm_model.produce_embeddings(self.vae_trainer.model, self.vae_trainer.data, self.vae_trainer.sess)
-        self.lstm_model.set_lstm_model_params(global_model_params)
         self.lstm_model.lstm_nn_model.summary()
         checkpoint_path = self.args['checkpoint_dir_lstm']\
                                           + "cp_{}.ckpt".format(self.lstm_model.name)

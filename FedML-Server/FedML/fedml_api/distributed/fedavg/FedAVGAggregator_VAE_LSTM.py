@@ -128,9 +128,13 @@ class FedAVGAggregator(object):
                 global_weights = np.multiply(self.lstm_weights[i], self.weights[i], dtype=np.float16)
             else:
                 global_weights += np.multiply(self.lstm_weights[i], self.weights[i], dtype=np.float16)
-        self.global_lstm_model.lstm_nn_model.set_weights(global_weights) # set global lstm model
-        end_time = time.time()
-        logging.info("LSTM aggregate time cost: %d" %(end_time - start_time))
-        glb_checkpoint_path = self.config['checkpoint_dir_lstm'] + "cp_{}.ckpt".format(self.global_lstm_model.name)
-        self.global_lstm_model.lstm_nn_model.save_weights(glb_checkpoint_path)
-        return global_weights # return list of arrays
+        try:
+            self.global_lstm_model.lstm_nn_model.set_weights(global_weights) # set global lstm model
+        except:
+            print('set lstm model failed')
+        else:
+            end_time = time.time()
+            logging.info("LSTM aggregate time cost: %d" %(end_time - start_time))
+            glb_checkpoint_path = self.config['checkpoint_dir_lstm'] + "cp_{}.ckpt".format(self.global_lstm_model.name)
+            self.global_lstm_model.lstm_nn_model.save_weights(glb_checkpoint_path)
+            return global_weights # return list of arrays
